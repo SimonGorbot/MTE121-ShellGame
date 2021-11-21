@@ -1,3 +1,5 @@
+// Motor Encoder = 230 degrees
+
 //MTE 121 - Shell Game Robot
 //=========================================
 const int RED_COL = 1;
