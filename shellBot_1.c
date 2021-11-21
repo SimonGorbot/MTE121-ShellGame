@@ -19,11 +19,11 @@ const tSensors COLOUR_SEN_PORT = S2;
 const tSensors TOUCH_SEN_PORT = S3;
 const tMotor RIGHT_MIX_MOTOR = motorA;
 const tMotor LEFT_MIX_MOTOR = motorD;
-const char L = LEFT_MIX_MOTOR;
-const char R = RIGHT_MIX_MOTOR;
+const char 'L' = LEFT_MIX_MOTOR;
+const char 'R' = RIGHT_MIX_MOTOR;
 const tMotor CENTER_MOTOR = motorB;
 //=========================================
-char RedMotorMixMoves[MAX_MIX_MOVES] = {L, R, L, R, L, R, L, R, L, R, L, R};
+char RedMotorMixMoves[MAX_MIX_MOVES] = {'L', 'R', 'L', 'R', 'L', 'R', 'L', 'R', 'L', 'R', 'L', 'R'};
 int RedDirMixMoves[MAX_MIX_MOVES] = {1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1, -1};
 int RedEncMixMoves[MAX_MIX_MOVES] = {180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180};
 
@@ -37,7 +37,8 @@ int BlueDirMixMoves[MAX_MIX_MOVES] = {1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1, -1};
 int BlueEncMixMoves[MAX_MIX_MOVES] = {180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180};
 
 //=========================================
-void calibrateSensorsAndMotors(tSensors ultson_port, tSensors colour_port, tSensors touch_port, tMotor motor_left, tMotor motor_right, tMotor motor_center); //done
+void calibrateSensorsAndMotors(); //done
+// tSensors ultson_port, tSensors colour_port, tSensors touch_port, tMotor motor_left, tMotor motor_right, tMotor motor_center
 void intakeSetUpArrays(fin, arrays);
 string senseGamePiece(tSensors colour_port);
 void motorMix(char motorMoves[MAX_MIX_MOVES], int dirMoves[MAX_MIX_MOVES], 
@@ -51,9 +52,15 @@ void liftChoice(tMotor motorPortsMedium);
 
 task main()
 {
+	calibrateSensorsAndMotors();
+	wait1Msec(50);
+
+	senseGamePiece();
+
+
 }
 
-void calibrateSensorsAndMotors(tSensors ultson_port, tSensors colour_port, tSensors touch_port)
+void calibrateSensorsAndMotors()
 {
 	SensorType[COLOUR_SEN_PORT] = sensorEV3_Color;
 	SensorMode[COLOUR_SEN_PORT] = modeEV3Color_Color;
@@ -61,7 +68,7 @@ void calibrateSensorsAndMotors(tSensors ultson_port, tSensors colour_port, tSens
 	SensorType[TOUCH_SEN_PORT] = sensorEV3_Touch;
 }
 
-int senseGamePiece(tSensors colour_port)
+string senseGamePiece(tSensors colour_port)
 {
 	int scannedColour = 0;
 	string scannedColourName = "";
