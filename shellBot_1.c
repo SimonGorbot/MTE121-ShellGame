@@ -39,7 +39,7 @@ int BlueNumSpins[MAX_MIX_MOVES] = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3};
 void calibrateSensors(tSensors ultson_port, tSensors colour_port, tSensors touch_port);
 int senseGamePiece(tSensors colour_port);
 void motorMix(char arrayMotor, int arrayDirection, int arraySpins);
-bool tooClose(tSensors ultrasensorPort);
+bool tooClose(tSensors ultsonPort);
 char getPlayerGuess(tSensors touchsensorPort);
 void centerGuess(char playerGuess, tMotor rightMotorPort, tMotor leftMotorPort);
 char pieceEnding(int colourScanned);
@@ -92,7 +92,7 @@ int senseGamePiece(tSensors colour_port)
 void motorMix(char arrayMotor, int arrayDirection, int arraySpins)
 {
 	tMotor turnMotor = motorC;
-    if(arrayMotor == 'A')
+    if(arrayMotor == 'R')
     {
         turnMotor = RIGHT_MIX_MOTOR;
     }
@@ -112,7 +112,7 @@ void motorMix(char arrayMotor, int arrayDirection, int arraySpins)
 
         nMotorEncoder[turnMotor] = 0;
 
-        turnMotor = -MOT_SPEED;
+        motor[turnMotor] = -MOT_SPEED;
         while (nMotorEncoder[turnMotor] > RESET_TURN)
         {}
     }
@@ -124,10 +124,27 @@ void motorMix(char arrayMotor, int arrayDirection, int arraySpins)
 
         nMotorEncoder[turnMotor] = 0;
 
-        turnMotor = MOT_SPEED;
+        motor[turnMotor] = MOT_SPEED;
         while (nMotorEncoder[turnMotor] < -RESET_TURN)
         {}
     }
+}
+
+bool tooClose(tSensors ultsonPort)
+{
+	if(SensorValue[ultsonPort]<50)
+	{
+		//if the player is too close
+		displayString(4,"PLAYER IS TOO CLOSE");
+		playSound(soundBeepBeep);
+		return true;
+	}
+	else
+	{
+		//if the player is far enough away
+		displayString(2,"Player distance: %d",SensorValue[ultsonPort]);
+		return false;
+	}
 }
 
 char getPlayerGuess(tSensors touchsensorPort)
@@ -186,3 +203,5 @@ bool guessCorrectness(char pieceEnding, char playerGuess)
 	else
 		return false;
 }
+
+//add lift function
