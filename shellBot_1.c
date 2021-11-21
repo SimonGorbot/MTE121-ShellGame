@@ -19,8 +19,8 @@ const tSensors COLOUR_SEN_PORT = S2;
 const tSensors TOUCH_SEN_PORT = S3;
 const tMotor RIGHT_MIX_MOTOR = motorA;
 const tMotor LEFT_MIX_MOTOR = motorD;
-const char L = LEFT_MIX_MOTOR;
-const char R = RIGHT_MIX_MOTOR;
+const tMotor L = LEFT_MIX_MOTOR;
+const tMotor R = RIGHT_MIX_MOTOR;
 const tMotor CENTER_MOTOR = motorB;
 //=========================================
 char RedMotorMixMoves[MAX_MIX_MOVES] = {L, R, L, R, L, R, L, R, L, R, L, R};
