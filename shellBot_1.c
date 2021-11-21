@@ -3,12 +3,16 @@
 const int RED_COL = 1;
 const int GREEN_COL = 1;
 const int BLUE_COL = 1;
-const int RED_WIN_POS = 0;
-const int GREEN_WIN_POS = 0;
-const int BLUE_WIN_POS = 0;
+const string RED_WIN_POS = "R/L/C";
+const string GREEN_WIN_POS = "R/L/C";
+const string BLUE_WIN_POS = "R/L/C";
 const int MAX_MIX_MOVES = 12;
 const int ULTRASONIC_LENGTH = 50; //cm
 const int HALF_ROT = 180;
+const int CC = -1; //Counter Clockwise
+const int CW = 1; //Clockwise
+const int MOT_SPEED = 30;
+const int STOP_SPEED = 0;
 
 const tSensors ULTSON_SEN_PORT = S1;
 const tSensors COLOUR_SEN_PORT = S2;
@@ -22,28 +26,28 @@ const tMotor CENTER_MOTOR = motorB;
 char RedMotorMixMoves[MAX_MIX_MOVES] = {L, R, L, R, L, R, L, R, L, R, L, R};
 int RedDirMixMoves[MAX_MIX_MOVES] = {1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1, -1};
 int RedEncMixMoves[MAX_MIX_MOVES] = {180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180};
-string correctRed = "R/L/C";
+
 
 char GreenMotorMixMoves[MAX_MIX_MOVES] = {L, R, L, R, L, R, L, R, L, R, L, R};
 int GreenDirMixMoves[MAX_MIX_MOVES] = {1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1, -1};
 int GreenEncMixMoves[MAX_MIX_MOVES] = {180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180};
-string correctGreen = "R/L/C";
 
 char BlueMotorMixMoves[MAX_MIX_MOVES] = {L, R, L, R, L, R, L, R, L, R, L, R};
 int BlueDirMixMoves[MAX_MIX_MOVES] = {1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1, -1};
 int BlueEncMixMoves[MAX_MIX_MOVES] = {180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180, 180};
-string correctBlue = "R/L/C";
+
 //=========================================
 void calibrateSensorsAndMotors(tSensors ultson_port, tSensors colour_port, tSensors touch_port, tMotor motor_left, tMotor motor_right, tMotor motor_center); //done
 void intakeSetUpArrays(fin, arrays);
 string senseGamePiece(tSensors colour_port);
-void motorMix(array, rightMotorPort, leftMotorPort);
-bool tooClose(ultrasensorPort);
-string getPlayerGuess(touchsensorPort);
-void centerGuess(playerGuess, rightMotorPort, leftMotorPort);
-string pieceEnding(colourScanned);
-bool guessCorrectness(colourScanned, playerGuess);
-void liftChoice(motorPortsMedium);
+void motorMix(char motorMoves[MAX_MIX_MOVES], int dirMoves[MAX_MIX_MOVES], 
+	int encMoves[MAX_MIX_MOVES], bool cheating);
+bool tooClose(tSensors ultrasensorPort);
+string getPlayerGuess(tSensors touchsensorPort);
+void centerGuess(string playerGuess, tMotor rightMotorPort, tMotor leftMotorPort);
+string pieceEnding(string colourScanned);
+bool guessCorrectness(string colourScanned, string playerGuess);
+void liftChoice(tMotor motorPortsMedium);
 
 task main()
 {
@@ -79,7 +83,33 @@ int senseGamePiece(tSensors colour_port)
 	return scannedColour;
 }
 
-string getPlayerGuess(touchsensorPort)
+void motorMix(char motorMoves[MAX_MIX_MOVES], int dirMoves[MAX_MIX_MOVES], 
+	int encMoves[MAX_MIX_MOVES], bool cheating)
+{
+	for(int moves = 0; moves <= MAX_MIX_MOVES || cheating == false; moves++)
+	{
+		nMotorEncoder[motorMoves[moves]] = 0;
+
+		if(dirMoves[moves] == CW)
+		{
+			motor[motorMoves[moves]] = MOT_SPEED;
+			while(nMotorEncoder[motorMoves[moves]] <= encMoves[moves])
+			{}
+			motor[motorMoves[moves]] = STOP_SPEED;
+
+		}
+
+		else
+		{
+			motor[motorMoves[moves]] = MOT_SPEED;
+			while(nMotorEncoder[motorMoves[moves]] >= CC * encMoves[moves])
+			{}
+			motor[motorMoves[moves]] = STOP_SPEED;
+		}
+	}
+}
+
+string getPlayerGuess(tSensors touchsensorPort)
 {
 	string playerGuess = "";
 
@@ -102,7 +132,7 @@ string getPlayerGuess(touchsensorPort)
 	return playerGuess;
 }
 
-void centerGuess(playerGuess, rightMotorPort, leftMotorPort)
+void centerGuess(string playerGuess, tMotor rightMotorPort, tMotor leftMotorPort)
 {
 	if(playerGuess == "Right")
 	{
@@ -125,17 +155,17 @@ void centerGuess(playerGuess, rightMotorPort, leftMotorPort)
 	}
 }
 
-string pieceEnding(colourScanned)
+string pieceEnding(string colourScanned)
 {
 	if(colourScanned == "Red")
-		return correctRed;
+		return RED_WIN_POS;
 	else if(colourScanned == "Green")
-		return correctGreen;
+		return GREEN_WIN_POS;
 	else
-		return correctBlue;
+		return BLUE_WIN_POS;
 }
 
-bool guessCorrectness(pieceEnding, playerGuess)
+bool guessCorrectness(string pieceEnding, string playerGuess)
 {
 	if(pieceEnding == playerGuess)
 		return true;
