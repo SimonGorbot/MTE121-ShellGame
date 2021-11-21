@@ -1,3 +1,5 @@
+// Motor Encoder = 230 degrees
+
 //MTE 121 - Shell Game Robot
 //=========================================
 const int RED_COL = 1;
@@ -9,6 +11,7 @@ const char BLUE_WIN_POS = 'l';
 const int MAX_MIX_MOVES = 12;
 const int ULTRASONIC_LENGTH = 50; //cm
 const int HALF_ROT = 180;
+const int SWITCH_ROT = 230;
 const int CC = -1; //Counter Clockwise
 const int CW = 1; //Clockwise
 const int MOT_SPEED = 30;
