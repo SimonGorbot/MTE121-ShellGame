@@ -22,13 +22,13 @@ const tMotor RIGHT_MIX_MOTOR = motorA;
 const tMotor LEFT_MIX_MOTOR = motorD;
 const tMotor CENTER_MOTOR = motorB;
 //=========================================
-char RedMotorMixMoves[MAX_MIX_MOVES] = {'L', 'L', 'R', 'R', 'L', 'L', 'L', 'L', 'L', 'R', 'R', 'L'};
-int RedDirMixMoves[MAX_MIX_MOVES] = {1, -1, -1, 1, 1, 1, 1, -1, 1, -1, 1, 1};
-int RedNumSpins[MAX_MIX_MOVES] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+char beepMotorMixMoves[MAX_MIX_MOVES] = {'L', 'L', 'R', 'R', 'L', 'L', 'L', 'L', 'L', 'R', 'R', 'L'};
+int beepDirMixMoves[MAX_MIX_MOVES] = {1, -1, -1, 1, 1, 1, 1, -1, 1, -1, 1, 1};
+int beepNumSpins[MAX_MIX_MOVES] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
-char BlueMotorMixMoves[MAX_MIX_MOVES] = {'L', 'R', 'L', 'R', 'L', 'R', 'L', 'R', 'L', 'R', 'L', 'R'};
-int BlueDirMixMoves[MAX_MIX_MOVES] = {1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1, -1};
-int BlueNumSpins[MAX_MIX_MOVES] = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3};
+char RedMotorMixMoves[MAX_MIX_MOVES] = {'L', 'R', 'L', 'R', 'L', 'R', 'L', 'R', 'L', 'R', 'L', 'R'};
+int RedDirMixMoves[MAX_MIX_MOVES] = {1, -1, 1, -1, 1, -1, 1, -1, 1, -1, 1, -1};
+int RedNumSpins[MAX_MIX_MOVES] = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3};
 //=========================================
 void calibrateSensors(tSensors ultson_port, tSensors colour_port, tSensors touch_port);
 int senseGamePiece(tSensors colour_port);
@@ -55,7 +55,7 @@ task main()
         motorMix(RedMotorMixMoves, RedDirMixMoves, RedNumSpins);
 
     else
-        motorMix(BlueMotorMixMoves, BlueDirMixMoves, BlueNumSpins);
+        motorMix(beepMotorMixMoves, beepDirMixMoves, beepNumSpins);
 
 	displayString(5, "%d", gamePiece);
 	wait1Msec(5000);
@@ -157,7 +157,7 @@ void motorMix(char* arrayMotor, int* arrayDirection, int* arraySpins)
 
 	}
 
-}	
+}
     //     else
     //     {
     //         if(arrayDirection[moves] == CW)
