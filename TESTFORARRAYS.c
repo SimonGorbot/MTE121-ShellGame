@@ -54,7 +54,7 @@ task main()
     if(gamePiece = RED_COL)
         motorMix(RedMotorMixMoves, RedDirMixMoves, RedNumSpins);
 
-    else   
+    else
         motorMix(BlueMotorMixMoves, BlueDirMixMoves, BlueNumSpins);
 
 	displayString(5, "%d", gamePiece);
@@ -111,88 +111,95 @@ void motorMix(char* arrayMotor, int* arrayDirection, int* arraySpins)
         nMotorEncoder[LEFT_MIX_MOTOR] = 0;
         nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
 
-        if(arrayMotor[moves] == 'L')
-        {
-            if(arrayDirection[moves] == CW)
-            {
-                motor[LEFT_MIX_MOTOR] = MOT_SPEED;
-                while(nMotorEncoder[LEFT_MIX_MOTOR] <= (230 + 180 * (arraySpins[moves]-1)))
-                {}
-                motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+		tMotor motSide = LEFT_MIX_MOTOR;
 
-                wait1Msec(100);
+        if(arrayMotor[moves] == 'R')
+		{
+			motSide = RIGHT_MIX_MOTOR;
+		}
 
-                nMotorEncoder[LEFT_MIX_MOTOR] = 0;
-                motor[LEFT_MIX_MOTOR] = -MOT_SPEED;
-                while(abs(nMotorEncoder[LEFT_MIX_MOTOR]) < RESET_TURN)
-                {}
-                motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+		if(arrayDirection[moves] == CW)
+		{
+			motor[motSide] = MOT_SPEED;
+			while(nMotorEncoder[motSide] <= (230 + 180 * (arraySpins[moves]-1)))
+			{}
+			motor[motSide] = STOP_SPEED;
 
-                wait1Msec(100);
+			wait1Msec(100);
 
-            }
+			nMotorEncoder[motSide] = 0;
+			motor[motSide] = -MOT_SPEED;
+			while(abs(nMotorEncoder[motSide]) < RESET_TURN)
+			{}
+			motor[motSide] = STOP_SPEED;
 
-            else
-            {
-                motor[LEFT_MIX_MOTOR] = -MOT_SPEED;
-                while(nMotorEncoder[LEFT_MIX_MOTOR] >= -(230 + 180 * (arraySpins[moves]-1)))
-                {}
-                motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+			wait1Msec(100);
 
-                wait1Msec(100);
+		}
 
-                nMotorEncoder[LEFT_MIX_MOTOR] = 0;
-                motor[LEFT_MIX_MOTOR] = MOT_SPEED;
-                while(abs(nMotorEncoder[LEFT_MIX_MOTOR]) < RESET_TURN)
-                {}
-                motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+		else
+		{
+			motor[motSide] = -MOT_SPEED;
+			while(nMotorEncoder[motSide] >= -(230 + 180 * (arraySpins[moves]-1)))
+			{}
+			motor[motSide] = STOP_SPEED;
 
-                wait1Msec(100);
-            }
-        }
+			wait1Msec(100);
 
-        else
-        {
-            if(arrayDirection[moves] == CW)
-            {
-                motor[RIGHT_MIX_MOTOR] = -MOT_SPEED;
-                while(nMotorEncoder[RIGHT_MIX_MOTOR] >= -(230 + (180 * (arraySpins[moves]-1))))
-                {}
-                motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
-                nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
+			nMotorEncoder[motSide] = 0;
+			motor[motSide] = MOT_SPEED;
+			while(abs(nMotorEncoder[motSide]) < RESET_TURN)
+			{}
+			motor[motSide] = STOP_SPEED;
 
-                wait1Msec(100);
+			wait1Msec(100);
+		}
 
-                nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
-                motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
-                while(abs(nMotorEncoder[RIGHT_MIX_MOTOR]) < RESET_TURN)
-                {}
-                motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+	}
 
-                wait1Msec(100);
-            }
+}	
+    //     else
+    //     {
+    //         if(arrayDirection[moves] == CW)
+    //         {
+    //             motor[RIGHT_MIX_MOTOR] = -MOT_SPEED;
+    //             while(nMotorEncoder[RIGHT_MIX_MOTOR] >= -(230 + (180 * (arraySpins[moves]-1))))
+    //             {}
+    //             motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+    //             nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
 
-            else
-            {
-                motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
-                while(nMotorEncoder[RIGHT_MIX_MOTOR] <= (230 + (180 * (arraySpins[moves]-1))))
-                {}
-                motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+    //             wait1Msec(100);
 
-                wait1Msec(100);
+    //             nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
+    //             motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
+    //             while(abs(nMotorEncoder[RIGHT_MIX_MOTOR]) < RESET_TURN)
+    //             {}
+    //             motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
 
-                nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
-                motor[RIGHT_MIX_MOTOR] = -MOT_SPEED;
-                while(abs(nMotorEncoder[RIGHT_MIX_MOTOR]) < RESET_TURN)
-                {}
-                motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+    //             wait1Msec(100);
+    //         }
 
-                wait1Msec(100);
-            }
-        }
-        wait1Msec(50);
-    }
-}
+    //         else
+    //         {
+    //             motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
+    //             while(nMotorEncoder[RIGHT_MIX_MOTOR] <= (230 + (180 * (arraySpins[moves]-1))))
+    //             {}
+    //             motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+
+    //             wait1Msec(100);
+
+    //             nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
+    //             motor[RIGHT_MIX_MOTOR] = -MOT_SPEED;
+    //             while(abs(nMotorEncoder[RIGHT_MIX_MOTOR]) < RESET_TURN)
+    //             {}
+    //             motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+
+    //             wait1Msec(100);
+    //         }
+    //     }
+    //     wait1Msec(50);
+    // }
+
 
 
 
@@ -268,4 +275,3 @@ bool guessCorrectness(char pieceEnding, char playerGuess)
 	else
 		return false;
 }
-
