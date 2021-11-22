@@ -25,7 +25,7 @@ const tMotor LEFT_MIX_MOTOR = motorD;
 const tMotor CENTER_MOTOR = motorB;
 //=========================================
 char RedMotorMixMoves[MAX_MIX_MOVES] = {'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L'};
-int RedDirMixMoves[MAX_MIX_MOVES] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+int RedDirMixMoves[MAX_MIX_MOVES] = {1, -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 int RedNumSpins[MAX_MIX_MOVES] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 char BlueMotorMixMoves[MAX_MIX_MOVES] = {'L', 'R', 'L', 'R', 'L', 'R', 'L', 'R', 'L', 'R', 'L', 'R'};
@@ -50,30 +50,140 @@ task main()
 	char usingMotorMixMoves[MAX_MIX_MOVES];
 	int usingDirMixMoves[MAX_MIX_MOVES];
 	int usingNumSpins[MAX_MIX_MOVES];
-	if (gamePiece == RED_COL)
-	{
-		usingMotorMixMoves = RedMotorMixMoves;
-		usingDirMixMoves = RedDirMixMoves;
-		usingNumSpins = RedNumSpins;
-		//char usingMotorMixMoves[MAX_MIX_MOVES] = {'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L'};
-		//int usingDirMixMoves[MAX_MIX_MOVES] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-		//int usingNumSpins[MAX_MIX_MOVES] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-	}
-	else
-	{
-		usingMotorMixMoves = BlueMotorMixMoves;
-		usingDirMixMoves = BlueDirMixMoves;
-		usingNumSpins = BlueNumSpins;
-	}
+	// if (gamePiece == RED_COL)
+	// {
+	// 	usingMotorMixMoves = RedMotorMixMoves;
+	// 	usingDirMixMoves = RedDirMixMoves;
+	// 	usingNumSpins = RedNumSpins;
+	// 	//char usingMotorMixMoves[MAX_MIX_MOVES] = {'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L'};
+	// 	//int usingDirMixMoves[MAX_MIX_MOVES] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+	// 	//int usingNumSpins[MAX_MIX_MOVES] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+	// }
+	// else
+	// {
+	// 	usingMotorMixMoves = BlueMotorMixMoves;
+	// 	usingDirMixMoves = BlueDirMixMoves;
+	// 	usingNumSpins = BlueNumSpins;
+	// }
 	eraseDisplay();
-	for (int count = 0; count <= MAX_MIX_MOVES; count++)
-	{
-		displayString(4, "motor: %c", usingMotorMixMoves[count]);
-		displayString(5, "dir: %d", usingDirMixMoves[count]);
-		displayString(6, "spins: %d", usingNumSpins[count]);
-		wait1Msec(2000);
-		eraseDisplay();
-	}
+	// for (int count = 0; count <= MAX_MIX_MOVES; count++)
+	// {
+	// 	displayString(4, "motor: %c", usingMotorMixMoves[count]);
+	// 	displayString(5, "dir: %d", usingDirMixMoves[count]);
+	// 	displayString(6, "spins: %d", usingNumSpins[count]);
+	// 	wait1Msec(2000);
+	// 	eraseDisplay();
+	// }
+
+
+    if(gamePiece == RED_COL)
+    {
+        displayString(7, "adsfkahsdfkjasfh REDREDREDRED");
+
+        for(int moves = 0; moves < MAX_MIX_MOVES; moves++)
+        {
+            nMotorEncoder[LEFT_MIX_MOTOR] = 0;
+            nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
+            displayString(8, "moves number is %d", moves);
+            char motSide = RedMotorMixMoves[moves];
+
+            if(motSide == 'L')
+            {
+
+                if(RedDirMixMoves[moves] == CW)
+                {
+                    motor[LEFT_MIX_MOTOR] = MOT_SPEED;
+                    while(nMotorEncoder[LEFT_MIX_MOTOR] <= (230 + 180 * (RedNumSpins[moves]-1)))
+                    {}
+                    motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+
+                }
+
+                else
+                {
+                    motor[LEFT_MIX_MOTOR] = MOT_SPEED;
+                    while(nMotorEncoder[LEFT_MIX_MOTOR] >= (230 + 180 * (RedNumSpins[moves]-1)))
+                    {}
+                    motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+                }
+            }
+
+            else
+            {
+
+                if(RedDirMixMoves[moves] == CW)
+                {
+                    motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
+                    while(nMotorEncoder[RIGHT_MIX_MOTOR] <= (230 + 180 * (RedNumSpins[moves]-1)))
+                    {}
+                    motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+
+                }
+
+                else
+                {
+                    motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
+                    while(nMotorEncoder[LEFT_MIX_MOTOR] >= (230 + 180 * (RedNumSpins[moves]-1)))
+                    {}
+                    motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+                }
+            }
+            wait1Msec(50);
+        }
+    }
+    else
+    {
+        for(int moves = 0; moves < MAX_MIX_MOVES; moves++)
+        {
+            nMotorEncoder[LEFT_MIX_MOTOR] = 0;
+            nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
+            char motSide = BlueMotorMixMoves[moves];
+            if(motSide == 'L')
+            {
+
+                if(BlueDirMixMoves[moves] == CW)
+                {
+                    motor[LEFT_MIX_MOTOR] = MOT_SPEED;
+                    while(nMotorEncoder[LEFT_MIX_MOTOR] <= (230 + 180 * (BlueNumSpins[moves]-1)))
+                    {}
+                    motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+
+                }
+
+                else
+                {
+                    motor[LEFT_MIX_MOTOR] = MOT_SPEED;
+                    while(nMotorEncoder[LEFT_MIX_MOTOR] >= (230 + 180 * (BlueNumSpins[moves]-1)))
+                    {}
+                    motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+                }
+            }
+
+            else
+            {
+
+                if(BlueDirMixMoves[moves] == CW)
+                {
+                    motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
+                    while(nMotorEncoder[RIGHT_MIX_MOTOR] <= (230 + 180 * (BlueNumSpins[moves]-1)))
+                    {}
+                    motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+
+                }
+
+                else
+                {
+                    motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
+                    while(nMotorEncoder[LEFT_MIX_MOTOR] >= (230 + 180 * (BlueNumSpins[moves]-1)))
+                    {}
+                    motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+                }
+            }
+
+             wait1Msec(50);
+        }
+    }
+
 	// for (int count = 0; count < MAX_MIX_MOVES; count++)
 	// {
 	// 	motorMix(usingMotorMixMoves[count], usingDirMixMoves[count], usingNumSpins[count]);
@@ -130,51 +240,51 @@ void motorMix(char arrayMotor, int arrayDirection, int arraySpins)
 {
 
 
-	for(int moves = 0; moves <= MAX_MIX_MOVES; moves++)
-	{
-	char *motChoice[MAX_MIX_MOVES] = arrayMotor;
-		if(motChoice == 'L')
-        {
+	// for(int moves = 0; moves <= MAX_MIX_MOVES; moves++)
+	// {
+	// char *motChoice[MAX_MIX_MOVES] = arrayMotor;
+	// 	if(motChoice == 'L')
+    //     {
 
-            if(arrayDirection[moves] == CW)
-            {
-                motor[LEFT_MIX_MOTOR] = MOT_SPEED;
-                while(nMotorEncoder[LEFT_MIX_MOTOR] <= (230 + 180 * arraySpins[moves]))
-                {}
-                motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+    //         if(arrayDirection[moves] == CW)
+    //         {
+    //             motor[LEFT_MIX_MOTOR] = MOT_SPEED;
+    //             while(nMotorEncoder[LEFT_MIX_MOTOR] <= (230 + 180 * arraySpins[moves]))
+    //             {}
+    //             motor[LEFT_MIX_MOTOR] = STOP_SPEED;
 
-            }
+    //         }
 
-            else
-            {
-                motor[LEFT_MIX_MOTOR] = MOT_SPEED;
-                while(nMotorEncoder[LEFT_MIX_MOTOR] >= (230 + 180 * arraySpins[moves]))
-                {}
-                motor[LEFT_MIX_MOTOR] = STOP_SPEED;
-            }
-        }
+    //         else
+    //         {
+    //             motor[LEFT_MIX_MOTOR] = MOT_SPEED;
+    //             while(nMotorEncoder[LEFT_MIX_MOTOR] >= (230 + 180 * arraySpins[moves]))
+    //             {}
+    //             motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+    //         }
+    //     }
 
-        else
-        {
+    //     else
+    //     {
 
-            if(arrayDirection[moves] == CW)
-            {
-                motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
-                while(nMotorEncoder[RIGHT_MIX_MOTOR] <= (230 + 180 * arraySpins[moves]))
-                {}
-                motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+    //         if(arrayDirection[moves] == CW)
+    //         {
+    //             motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
+    //             while(nMotorEncoder[RIGHT_MIX_MOTOR] <= (230 + 180 * arraySpins[moves]))
+    //             {}
+    //             motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
 
-            }
+    //         }
 
-            else
-            {
-                motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
-                while(nMotorEncoder[LEFT_MIX_MOTOR] >= (230 + 180 * arraySpins[moves]))
-                {}
-                motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
-            }
-        }
-	}
+    //         else
+    //         {
+    //             motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
+    //             while(nMotorEncoder[LEFT_MIX_MOTOR] >= (230 + 180 * arraySpins[moves]))
+    //             {}
+    //             motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+    //         }
+    //     }
+	// }
 
 
 
@@ -212,6 +322,9 @@ void motorMix(char arrayMotor, int arrayDirection, int arraySpins)
     // }
     // displayString(5, "In motorMix");
 }
+
+
+
 
 bool tooClose(tSensors ultsonPort)
 {
