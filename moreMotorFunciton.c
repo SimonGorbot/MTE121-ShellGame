@@ -12,10 +12,10 @@ const int HALF_ROT = 180;
 const int SWITCH_ROT = 230;
 const int CC = -1; //Counter Clockwise
 const int CW = 1; //Clockwise
-const int MOT_SPEED = 30;
+const int MOT_SPEED = 10;
 const int STOP_SPEED = 0;
 const int MIX_TURN = 230;
-const int RESET_TURN = -50;
+const int RESET_TURN = 50;
 
 const tSensors ULTSON_SEN_PORT = S1;
 const tSensors COLOUR_SEN_PORT = S2;
@@ -98,6 +98,16 @@ task main()
                     {}
                     motor[LEFT_MIX_MOTOR] = STOP_SPEED;
 
+                    wait1Msec(100);
+
+                    nMotorEncoder[LEFT_MIX_MOTOR] = 0;
+                    motor[LEFT_MIX_MOTOR] = -MOT_SPEED;
+                    while(abs(nMotorEncoder[LEFT_MIX_MOTOR]) < RESET_TURN)
+                    {}
+                    motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+
+                    wait1Msec(100);
+
                 }
 
                 else
@@ -106,6 +116,16 @@ task main()
                     while(nMotorEncoder[LEFT_MIX_MOTOR] >= -(230 + 180 * (RedNumSpins[moves]-1)))
                     {}
                     motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+
+                    wait1Msec(100);
+
+                    nMotorEncoder[LEFT_MIX_MOTOR] = 0;
+                    motor[LEFT_MIX_MOTOR] = MOT_SPEED;
+                    while(abs(nMotorEncoder[LEFT_MIX_MOTOR]) < RESET_TURN)
+                    {}
+                    motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+
+                    wait1Msec(100);
                 }
             }
 
@@ -119,6 +139,16 @@ task main()
                     {}
                     motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
                     nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
+
+                    wait1Msec(100);
+
+                    nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
+                    motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
+                    while(abs(nMotorEncoder[RIGHT_MIX_MOTOR]) < RESET_TURN)
+                    {}
+                    motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+
+                    wait1Msec(100);
                 }
 
                 else
@@ -127,6 +157,16 @@ task main()
                     while(nMotorEncoder[RIGHT_MIX_MOTOR] <= (230 + (180 * (RedNumSpins[moves]-1))))
                     {}
                     motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+
+                    wait1Msec(100);
+
+                    nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
+                    motor[RIGHT_MIX_MOTOR] = -MOT_SPEED;
+                    while(abs(nMotorEncoder[RIGHT_MIX_MOTOR]) < RESET_TURN)
+                    {}
+                    motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+
+                    wait1Msec(100);
                 }
             }
             wait1Msec(50);
