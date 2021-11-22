@@ -12,7 +12,7 @@ const int HALF_ROT = 180;
 const int SWITCH_ROT = 230;
 const int CC = -1; //Counter Clockwise
 const int CW = 1; //Clockwise
-const int MOT_SPEED = 10;
+const int MOT_SPEED = 30;
 const int STOP_SPEED = 0;
 const int MIX_TURN = 230;
 const int RESET_TURN = -50;
@@ -24,8 +24,8 @@ const tMotor RIGHT_MIX_MOTOR = motorA;
 const tMotor LEFT_MIX_MOTOR = motorD;
 const tMotor CENTER_MOTOR = motorB;
 //=========================================
-char RedMotorMixMoves[MAX_MIX_MOVES] = {'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L'};
-int RedDirMixMoves[MAX_MIX_MOVES] = {1, -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+char RedMotorMixMoves[MAX_MIX_MOVES] = {'L', 'L', 'R', 'R', 'L', 'L', 'L', 'L', 'L', 'R', 'R', 'L'};
+int RedDirMixMoves[MAX_MIX_MOVES] = {1, -1, -1, 1, 1, 1, 1, -1, 1, -1, 1, 1};
 int RedNumSpins[MAX_MIX_MOVES] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 char BlueMotorMixMoves[MAX_MIX_MOVES] = {'L', 'R', 'L', 'R', 'L', 'R', 'L', 'R', 'L', 'R', 'L', 'R'};
@@ -84,12 +84,13 @@ task main()
         {
             nMotorEncoder[LEFT_MIX_MOTOR] = 0;
             nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
+
             displayString(8, "moves number is %d", moves);
             char motSide = RedMotorMixMoves[moves];
 
-            if(motSide == 'L')
+            if(RedMotorMixMoves[moves] == 'L')
             {
-
+                displayString(2, "LEFTTTT side spinnnnnnnn");
                 if(RedDirMixMoves[moves] == CW)
                 {
                     motor[LEFT_MIX_MOTOR] = MOT_SPEED;
@@ -101,29 +102,29 @@ task main()
 
                 else
                 {
-                    motor[LEFT_MIX_MOTOR] = MOT_SPEED;
-                    while(nMotorEncoder[LEFT_MIX_MOTOR] >= (230 + 180 * (RedNumSpins[moves]-1)))
+                    motor[LEFT_MIX_MOTOR] = -MOT_SPEED;
+                    while(nMotorEncoder[LEFT_MIX_MOTOR] >= -(230 + 180 * (RedNumSpins[moves]-1)))
                     {}
                     motor[LEFT_MIX_MOTOR] = STOP_SPEED;
                 }
             }
 
-            else
+            else if (RedMotorMixMoves[moves] == 'R')
             {
-
+                displayString(2, "RIGHTTHTHTHT side spinnnnnnnn");
                 if(RedDirMixMoves[moves] == CW)
                 {
-                    motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
-                    while(nMotorEncoder[RIGHT_MIX_MOTOR] <= (230 + 180 * (RedNumSpins[moves]-1)))
+                    motor[RIGHT_MIX_MOTOR] = -MOT_SPEED;
+                    while(nMotorEncoder[RIGHT_MIX_MOTOR] >= -(230 + (180 * (RedNumSpins[moves]-1))))
                     {}
                     motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
-
+                    nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
                 }
 
                 else
                 {
                     motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
-                    while(nMotorEncoder[LEFT_MIX_MOTOR] >= (230 + 180 * (RedNumSpins[moves]-1)))
+                    while(nMotorEncoder[RIGHT_MIX_MOTOR] <= (230 + (180 * (RedNumSpins[moves]-1))))
                     {}
                     motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
                 }
