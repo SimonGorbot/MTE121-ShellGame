@@ -128,39 +128,89 @@ int senseGamePiece(tSensors colour_port)
 
 void motorMix(char arrayMotor, int arrayDirection, int arraySpins)
 {
-	tMotor turnMotor = motorC;
-    if(arrayMotor == 'R')
-        turnMotor = RIGHT_MIX_MOTOR;
-    else
-        turnMotor = LEFT_MIX_MOTOR;
-    int turnDist = (arraySpins * 360) + MIX_TURN;
-    if(arrayDirection == 1)
-    {
-        nMotorEncoder[turnMotor] = 0;
-        motor[turnMotor] = MOT_SPEED;
-        while (nMotorEncoder[turnMotor] < turnDist)
-        {}
-      	motor[turnMotor] = STOP_SPEED;
-        nMotorEncoder[turnMotor] = 0;
-        motor[turnMotor] = -MOT_SPEED;
-        while (nMotorEncoder[turnMotor] > RESET_TURN)
-        {}
-      	motor[turnMotor] = STOP_SPEED;
-    }
-    else
-    {
-    		nMotorEncoder[turnMotor] = 0;
-        motor[turnMotor] = -MOT_SPEED;
-        while (nMotorEncoder[turnMotor] > -turnDist)
-        {}
-      	motor[turnMotor] = STOP_SPEED;
-        nMotorEncoder[turnMotor] = 0;
-        motor[turnMotor] = MOT_SPEED;
-        while (nMotorEncoder[turnMotor] < -RESET_TURN)
-        {}
-      	motor[turnMotor] = STOP_SPEED;
-    }
-    displayString(5, "In motorMix");
+
+
+	for(int moves = 0; moves <= MAX_MIX_MOVES; moves++)
+	{
+	char *motChoice[MAX_MIX_MOVES] = arrayMotor;
+		if(motChoice == 'L')
+        {
+
+            if(arrayDirection[moves] == CW)
+            {
+                motor[LEFT_MIX_MOTOR] = MOT_SPEED;
+                while(nMotorEncoder[LEFT_MIX_MOTOR] <= (230 + 180 * arraySpins[moves]))
+                {}
+                motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+
+            }
+
+            else
+            {
+                motor[LEFT_MIX_MOTOR] = MOT_SPEED;
+                while(nMotorEncoder[LEFT_MIX_MOTOR] >= (230 + 180 * arraySpins[moves]))
+                {}
+                motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+            }
+        }
+
+        else
+        {
+
+            if(arrayDirection[moves] == CW)
+            {
+                motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
+                while(nMotorEncoder[RIGHT_MIX_MOTOR] <= (230 + 180 * arraySpins[moves]))
+                {}
+                motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+
+            }
+
+            else
+            {
+                motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
+                while(nMotorEncoder[LEFT_MIX_MOTOR] >= (230 + 180 * arraySpins[moves]))
+                {}
+                motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+            }
+        }
+	}
+
+
+
+	// tMotor turnMotor = motorC;
+    // if(arrayMotor == 'R')
+    //     turnMotor = RIGHT_MIX_MOTOR;
+    // else
+    //     turnMotor = LEFT_MIX_MOTOR;
+    // int turnDist = (arraySpins * 360) + MIX_TURN;
+    // if(arrayDirection == 1)
+    // {
+    //     nMotorEncoder[turnMotor] = 0;
+    //     motor[turnMotor] = MOT_SPEED;
+    //     while (nMotorEncoder[turnMotor] < turnDist)
+    //     {}
+    //   	motor[turnMotor] = STOP_SPEED;
+    //     nMotorEncoder[turnMotor] = 0;
+    //     motor[turnMotor] = -MOT_SPEED;
+    //     while (nMotorEncoder[turnMotor] > RESET_TURN)
+    //     {}
+    //   	motor[turnMotor] = STOP_SPEED;
+    // }
+    // else
+    // {
+    // 		nMotorEncoder[turnMotor] = 0;
+    //     motor[turnMotor] = -MOT_SPEED;
+    //     while (nMotorEncoder[turnMotor] > -turnDist)
+    //     {}
+    //   	motor[turnMotor] = STOP_SPEED;
+    //     nMotorEncoder[turnMotor] = 0;
+    //     motor[turnMotor] = MOT_SPEED;
+    //     while (nMotorEncoder[turnMotor] < -RESET_TURN)
+    //     {}
+    //   	motor[turnMotor] = STOP_SPEED;
+    // }
+    // displayString(5, "In motorMix");
 }
 
 bool tooClose(tSensors ultsonPort)
