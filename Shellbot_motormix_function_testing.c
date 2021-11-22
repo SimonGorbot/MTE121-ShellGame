@@ -36,10 +36,10 @@ void calibrateSensors(tSensors ultson_port, tSensors colour_port, tSensors touch
 int senseGamePiece(tSensors colour_port);
 void motorMix(char arrayMotor, int arrayDirection, int arraySpins);
 bool tooClose(tSensors ultsonPort);
-char pieceEnding(int selectedGamePiece);
 char getPlayerGuess(tSensors touchsensorPort);
 void centerGuess(char playerGuess, tMotor rightMotorPort, tMotor leftMotorPort);
-bool guessCorrectness(char winPosition, char playerGuess);
+char pieceEnding(int colourScanned);
+bool guessCorrectness(int colourScanned, char playerGuess);
 void liftChoice(tMotor motorPortsMedium);
 //=========================================
 task main()
@@ -47,25 +47,41 @@ task main()
 	calibrateSensors(ULTSON_SEN_PORT, COLOUR_SEN_PORT, TOUCH_SEN_PORT);
 
 	int gamePiece = senseGamePiece(COLOUR_SEN_PORT);
-
-	displayString(5, "%d", gamePiece);
-	wait1Msec(2000);
-	eraseDisplay();
-
-	char playerChoice = getPlayerGuess(TOUCH_SEN_PORT);
-
-	centerGuess(playerChoice, RIGHT_MIX_MOTOR, LEFT_MIX_MOTOR);
-
-	wait1Msec(1000);
-
-	if (guessCorrectness(pieceEnding(gamePiece), playerChoice))
-		displayString(5, "YOU WON");
+	char usingMotorMixMoves[MAX_MIX_MOVES];
+	int usingDirMixMoves[MAX_MIX_MOVES];
+	int usingNumSpins[MAX_MIX_MOVES];
+	if (gamePiece == RED_COL)
+	{
+		usingMotorMixMoves = RedMotorMixMoves;
+		usingDirMixMoves = RedDirMixMoves;
+		usingNumSpins = RedNumSpins;
+		//char usingMotorMixMoves[MAX_MIX_MOVES] = {'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L'};
+		//int usingDirMixMoves[MAX_MIX_MOVES] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+		//int usingNumSpins[MAX_MIX_MOVES] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+	}
 	else
-		displayString(5, "YOU LOST");
-
-	liftChoice(CENTER_MOTOR);
-
-
+	{
+		usingMotorMixMoves = BlueMotorMixMoves;
+		usingDirMixMoves = BlueDirMixMoves;
+		usingNumSpins = BlueNumSpins;
+	}
+	eraseDisplay();
+	for (int count = 0; count <= MAX_MIX_MOVES; count++)
+	{
+		displayString(4, "motor: %c", usingMotorMixMoves[count]);
+		displayString(5, "dir: %d", usingDirMixMoves[count]);
+		displayString(6, "spins: %d", usingNumSpins[count]);
+		wait1Msec(2000);
+		eraseDisplay();
+	}
+	//for (int count = 0; count < MAX_MIX_MOVES; count++)
+	//{
+	//	motorMix(usingMotorMixMoves[count], usingDirMixMoves[count], usingNumSpins[count]);
+	//	displayString(4, "count: %d", count);
+	//	wait1Msec(2000);
+	//}
+	displayString(5, "%d", gamePiece);
+	wait1Msec(5000);
 }
 //=========================================
 void calibrateSensors(tSensors ultson_port, tSensors colour_port, tSensors touch_port)
@@ -164,14 +180,6 @@ bool tooClose(tSensors ultsonPort)
 	}
 }
 
-char pieceEnding(int selectedGamePiece)
-{
-	if (selectedGamePiece	== RED_COL)
-		return RED_WIN_POS;
-	else
-		return BLUE_WIN_POS;
-}
-
 char getPlayerGuess(tSensors touchsensorPort)
 {
 	char playerGuess = 'a';
@@ -183,48 +191,48 @@ char getPlayerGuess(tSensors touchsensorPort)
 		playerGuess = 'r';
 	else if(getButtonPress(buttonLeft))
 		playerGuess = 'l';
-	displayString(1, "%c",playerGuess);
-	while(getButtonPress(buttonAny))
+	while(!getButtonPress(buttonAny))
 	{}
 	return playerGuess;
 }
 
 void centerGuess(char playerGuess, tMotor rightMotorPort, tMotor leftMotorPort)
 {
-	if(playerGuess == 'r')
+	if(playerGuess == 'R')
 	{
 		nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
 
-		motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
-		while(nMotorEncoder[RIGHT_MIX_MOTOR] < SWITCH_ROT)
+		motor[RIGHT_MIX_MOTOR] = 15;
+		while(nMotorEncoder[RIGHT_MIX_MOTOR] < HALF_ROT)
 		{}
 		motor[RIGHT_MIX_MOTOR] = 0;
 	}
 
-	else if(playerGuess == 'l')
+	else if(playerGuess == 'L')
 	{
 		nMotorEncoder[LEFT_MIX_MOTOR] = 0;
 
-		motor[LEFT_MIX_MOTOR] = MOT_SPEED;
-		while(nMotorEncoder[LEFT_MIX_MOTOR] < SWITCH_ROT)
+		motor[LEFT_MIX_MOTOR] = 15;
+		while(nMotorEncoder[LEFT_MIX_MOTOR] < HALF_ROT)
 		{}
 		motor[LEFT_MIX_MOTOR] = 0;
 	}
 }
 
-bool guessCorrectness(char winPosition, char playerGuess)
+char pieceEnding(int colourScanned)
 {
-	if(winPosition == playerGuess)
+	if(colourScanned == RED_COL)
+		return RED_WIN_POS;
+	else
+		return BLUE_WIN_POS;
+}
+
+bool guessCorrectness(char pieceEnding, char playerGuess)
+{
+	if(pieceEnding == playerGuess)
 		return true;
 	else
 		return false;
 }
 
-void liftChoice(tMotor motorPortsMedium)
-{
-	nMotorEncoder[motorPortsMedium] = 0;
-	motor[motorPortsMedium] = 15;
-	while(nMotorEncoder[motorPortsMedium] <= 100)
-	{}
-	motor[motorPortsMedium] = 0;
-}
+//add lift function
