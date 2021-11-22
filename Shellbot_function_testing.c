@@ -9,13 +9,13 @@ const char BLUE_WIN_POS = 'l';
 const int MAX_MIX_MOVES = 12;
 const int ULTRASONIC_LENGTH = 50; //cm
 const int HALF_ROT = 180;
-const int SWITCH_ROT = 230;
+const int SWITCH_ROT = 240;
 const int CC = -1; //Counter Clockwise
 const int CW = 1; //Clockwise
 const int MOT_SPEED = 10;
 const int STOP_SPEED = 0;
 const int MIX_TURN = 230;
-const int RESET_TURN = -50;
+const int RESET_TURN = 60;
 
 const tSensors ULTSON_SEN_PORT = S1;
 const tSensors COLOUR_SEN_PORT = S2;
@@ -64,8 +64,6 @@ task main()
 		displayString(5, "YOU LOST");
 
 	liftChoice(CENTER_MOTOR);
-
-
 }
 //=========================================
 void calibrateSensors(tSensors ultson_port, tSensors colour_port, tSensors touch_port)
@@ -127,7 +125,7 @@ void motorMix(char arrayMotor, int arrayDirection, int arraySpins)
       	motor[turnMotor] = STOP_SPEED;
         nMotorEncoder[turnMotor] = 0;
         motor[turnMotor] = -MOT_SPEED;
-        while (nMotorEncoder[turnMotor] > RESET_TURN)
+        while (abs(nMotorEncoder[turnMotor]) < RESET_TURN)
         {}
       	motor[turnMotor] = STOP_SPEED;
     }
@@ -140,7 +138,7 @@ void motorMix(char arrayMotor, int arrayDirection, int arraySpins)
       	motor[turnMotor] = STOP_SPEED;
         nMotorEncoder[turnMotor] = 0;
         motor[turnMotor] = MOT_SPEED;
-        while (nMotorEncoder[turnMotor] < -RESET_TURN)
+        while (abs(nMotorEncoder[turnMotor]) > -RESET_TURN)
         {}
       	motor[turnMotor] = STOP_SPEED;
     }
@@ -198,7 +196,12 @@ void centerGuess(char playerGuess, tMotor rightMotorPort, tMotor leftMotorPort)
 		motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
 		while(nMotorEncoder[RIGHT_MIX_MOTOR] < SWITCH_ROT)
 		{}
-		motor[RIGHT_MIX_MOTOR] = 0;
+		motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+		nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
+		motor[RIGHT_MIX_MOTOR] = -MOT_SPEED;
+		while (abs(nMotorEncoder[RIGHT_MIX_MOTOR]) < RESET_TURN)
+		{}
+		motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
 	}
 
 	else if(playerGuess == 'l')
@@ -208,7 +211,12 @@ void centerGuess(char playerGuess, tMotor rightMotorPort, tMotor leftMotorPort)
 		motor[LEFT_MIX_MOTOR] = MOT_SPEED;
 		while(nMotorEncoder[LEFT_MIX_MOTOR] < SWITCH_ROT)
 		{}
-		motor[LEFT_MIX_MOTOR] = 0;
+		motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+		nMotorEncoder[LEFT_MIX_MOTOR] = 0;
+		motor[LEFT_MIX_MOTOR] = -MOT_SPEED;
+		while (abs(nMotorEncoder[LEFT_MIX_MOTOR]) < RESET_TURN)
+		{}
+		motor[LEFT_MIX_MOTOR] = STOP_SPEED;
 	}
 }
 
@@ -223,8 +231,8 @@ bool guessCorrectness(char winPosition, char playerGuess)
 void liftChoice(tMotor motorPortsMedium)
 {
 	nMotorEncoder[motorPortsMedium] = 0;
-	motor[motorPortsMedium] = 15;
-	while(nMotorEncoder[motorPortsMedium] <= 100)
+	motor[motorPortsMedium] = 50;
+	while(nMotorEncoder[motorPortsMedium] <= 2100)
 	{}
 	motor[motorPortsMedium] = 0;
 }
