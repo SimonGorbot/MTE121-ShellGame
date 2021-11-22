@@ -1,5 +1,3 @@
-// Motor Encoder = 230 degrees
-
 //MTE 121 - Shell Game Robot
 //=========================================
 const int RED_COL = (int)colorRed;
@@ -15,7 +13,7 @@ const int CW = 1; //Clockwise
 const int MOT_SPEED = 10;
 const int STOP_SPEED = 0;
 const int MIX_TURN = 230;
-const int RESET_TURN = -50;
+const int RESET_TURN = 50;
 
 const tSensors ULTSON_SEN_PORT = S1;
 const tSensors COLOUR_SEN_PORT = S2;
@@ -24,8 +22,8 @@ const tMotor RIGHT_MIX_MOTOR = motorA;
 const tMotor LEFT_MIX_MOTOR = motorD;
 const tMotor CENTER_MOTOR = motorB;
 //=========================================
-char RedMotorMixMoves[MAX_MIX_MOVES] = {'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L'};
-int RedDirMixMoves[MAX_MIX_MOVES] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+char RedMotorMixMoves[MAX_MIX_MOVES] = {'L', 'L', 'R', 'R', 'L', 'L', 'L', 'L', 'L', 'R', 'R', 'L'};
+int RedDirMixMoves[MAX_MIX_MOVES] = {1, -1, -1, 1, 1, 1, 1, -1, 1, -1, 1, 1};
 int RedNumSpins[MAX_MIX_MOVES] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 char BlueMotorMixMoves[MAX_MIX_MOVES] = {'L', 'R', 'L', 'R', 'L', 'R', 'L', 'R', 'L', 'R', 'L', 'R'};
@@ -34,10 +32,10 @@ int BlueNumSpins[MAX_MIX_MOVES] = {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3};
 //=========================================
 void calibrateSensors(tSensors ultson_port, tSensors colour_port, tSensors touch_port);
 int senseGamePiece(tSensors colour_port);
-void motorMix(char arrayMotor, int arrayDirection, int arraySpins);
+void motorMix(char* arrayMotor, int* arrayDirection, int* arraySpins);
 bool tooClose(tSensors ultsonPort);
 char getPlayerGuess(tSensors touchsensorPort);
-void centerGuess(char playerGuess, tMotor rightMotorPort, tMotor leftMotorPort);
+void centerGuess(char playerGuess);
 char pieceEnding(int colourScanned);
 bool guessCorrectness(int colourScanned, char playerGuess);
 void liftChoice(tMotor motorPortsMedium);
@@ -50,36 +48,15 @@ task main()
 	char usingMotorMixMoves[MAX_MIX_MOVES];
 	int usingDirMixMoves[MAX_MIX_MOVES];
 	int usingNumSpins[MAX_MIX_MOVES];
-	if (gamePiece == RED_COL)
-	{
-		usingMotorMixMoves = RedMotorMixMoves;
-		usingDirMixMoves = RedDirMixMoves;
-		usingNumSpins = RedNumSpins;
-		//char usingMotorMixMoves[MAX_MIX_MOVES] = {'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L', 'L'};
-		//int usingDirMixMoves[MAX_MIX_MOVES] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-		//int usingNumSpins[MAX_MIX_MOVES] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
-	}
-	else
-	{
-		usingMotorMixMoves = BlueMotorMixMoves;
-		usingDirMixMoves = BlueDirMixMoves;
-		usingNumSpins = BlueNumSpins;
-	}
+
 	eraseDisplay();
-	for (int count = 0; count <= MAX_MIX_MOVES; count++)
-	{
-		displayString(4, "motor: %c", usingMotorMixMoves[count]);
-		displayString(5, "dir: %d", usingDirMixMoves[count]);
-		displayString(6, "spins: %d", usingNumSpins[count]);
-		wait1Msec(2000);
-		eraseDisplay();
-	}
-	// for (int count = 0; count < MAX_MIX_MOVES; count++)
-	// {
-	// 	motorMix(usingMotorMixMoves[count], usingDirMixMoves[count], usingNumSpins[count]);
-	// 	displayString(4, "count: %d", count);
-	// 	wait1Msec(2000);
-	// }
+
+    if(gamePiece = RED_COL)
+        motorMix(RedMotorMixMoves, RedDirMixMoves, RedNumSpins);
+
+    else   
+        motorMix(BlueMotorMixMoves, BlueDirMixMoves, BlueNumSpins);
+
 	displayString(5, "%d", gamePiece);
 	wait1Msec(5000);
 }
@@ -126,42 +103,99 @@ int senseGamePiece(tSensors colour_port)
 	return scannedColour;
 }
 
-void motorMix(char arrayMotor, int arrayDirection, int arraySpins)
+void motorMix(char* arrayMotor, int* arrayDirection, int* arraySpins)
 {
-	tMotor turnMotor = motorC;
-    if(arrayMotor == 'R')
-        turnMotor = RIGHT_MIX_MOTOR;
-    else
-        turnMotor = LEFT_MIX_MOTOR;
-    int turnDist = (arraySpins * 360) + MIX_TURN;
-    if(arrayDirection == 1)
+
+    for(int moves = 0; moves < MAX_MIX_MOVES; moves++)
     {
-        nMotorEncoder[turnMotor] = 0;
-        motor[turnMotor] = MOT_SPEED;
-        while (nMotorEncoder[turnMotor] < turnDist)
-        {}
-      	motor[turnMotor] = STOP_SPEED;
-        nMotorEncoder[turnMotor] = 0;
-        motor[turnMotor] = -MOT_SPEED;
-        while (nMotorEncoder[turnMotor] > RESET_TURN)
-        {}
-      	motor[turnMotor] = STOP_SPEED;
+        nMotorEncoder[LEFT_MIX_MOTOR] = 0;
+        nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
+
+        if(arrayMotor[moves] == 'L')
+        {
+            if(arrayDirection[moves] == CW)
+            {
+                motor[LEFT_MIX_MOTOR] = MOT_SPEED;
+                while(nMotorEncoder[LEFT_MIX_MOTOR] <= (230 + 180 * (arraySpins[moves]-1)))
+                {}
+                motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+
+                wait1Msec(100);
+
+                nMotorEncoder[LEFT_MIX_MOTOR] = 0;
+                motor[LEFT_MIX_MOTOR] = -MOT_SPEED;
+                while(abs(nMotorEncoder[LEFT_MIX_MOTOR]) < RESET_TURN)
+                {}
+                motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+
+                wait1Msec(100);
+
+            }
+
+            else
+            {
+                motor[LEFT_MIX_MOTOR] = -MOT_SPEED;
+                while(nMotorEncoder[LEFT_MIX_MOTOR] >= -(230 + 180 * (arraySpins[moves]-1)))
+                {}
+                motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+
+                wait1Msec(100);
+
+                nMotorEncoder[LEFT_MIX_MOTOR] = 0;
+                motor[LEFT_MIX_MOTOR] = MOT_SPEED;
+                while(abs(nMotorEncoder[LEFT_MIX_MOTOR]) < RESET_TURN)
+                {}
+                motor[LEFT_MIX_MOTOR] = STOP_SPEED;
+
+                wait1Msec(100);
+            }
+        }
+
+        else
+        {
+            if(arrayDirection[moves] == CW)
+            {
+                motor[RIGHT_MIX_MOTOR] = -MOT_SPEED;
+                while(nMotorEncoder[RIGHT_MIX_MOTOR] >= -(230 + (180 * (arraySpins[moves]-1))))
+                {}
+                motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+                nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
+
+                wait1Msec(100);
+
+                nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
+                motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
+                while(abs(nMotorEncoder[RIGHT_MIX_MOTOR]) < RESET_TURN)
+                {}
+                motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+
+                wait1Msec(100);
+            }
+
+            else
+            {
+                motor[RIGHT_MIX_MOTOR] = MOT_SPEED;
+                while(nMotorEncoder[RIGHT_MIX_MOTOR] <= (230 + (180 * (arraySpins[moves]-1))))
+                {}
+                motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+
+                wait1Msec(100);
+
+                nMotorEncoder[RIGHT_MIX_MOTOR] = 0;
+                motor[RIGHT_MIX_MOTOR] = -MOT_SPEED;
+                while(abs(nMotorEncoder[RIGHT_MIX_MOTOR]) < RESET_TURN)
+                {}
+                motor[RIGHT_MIX_MOTOR] = STOP_SPEED;
+
+                wait1Msec(100);
+            }
+        }
+        wait1Msec(50);
     }
-    else
-    {
-    		nMotorEncoder[turnMotor] = 0;
-        motor[turnMotor] = -MOT_SPEED;
-        while (nMotorEncoder[turnMotor] > -turnDist)
-        {}
-      	motor[turnMotor] = STOP_SPEED;
-        nMotorEncoder[turnMotor] = 0;
-        motor[turnMotor] = MOT_SPEED;
-        while (nMotorEncoder[turnMotor] < -RESET_TURN)
-        {}
-      	motor[turnMotor] = STOP_SPEED;
-    }
-    displayString(5, "In motorMix");
 }
+
+
+
 
 bool tooClose(tSensors ultsonPort)
 {
@@ -185,20 +219,18 @@ char getPlayerGuess(tSensors touchsensorPort)
 	char playerGuess = 'a';
 	while(!getButtonPress(buttonAny))
 	{}
-
 	if(getButtonPress(buttonEnter))
 		playerGuess = 'c';
 	else if(getButtonPress(buttonRight))
 		playerGuess = 'r';
 	else if(getButtonPress(buttonLeft))
 		playerGuess = 'l';
-
-	while(getButtonPress(buttonAny))
+	while(!getButtonPress(buttonAny))
 	{}
 	return playerGuess;
 }
 
-void centerGuess(char playerGuess, tMotor rightMotorPort, tMotor leftMotorPort)
+void centerGuess(char playerGuess)
 {
 	if(playerGuess == 'R')
 	{
@@ -237,4 +269,3 @@ bool guessCorrectness(char pieceEnding, char playerGuess)
 		return false;
 }
 
-//add lift function
